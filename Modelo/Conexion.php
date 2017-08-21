@@ -1,5 +1,8 @@
 <?php
 
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
+
 class Conexion {
 
     private $con;
@@ -8,7 +11,7 @@ class Conexion {
 
     public function __construct($bd) {
         try {
-            $this->con = new PDO('mysql:host=localhost;dbname=' . $bd . ';charset=utf8', 'root', '', array(
+            $this->con = new PDO('mysql:host=localhost;dbname=' . $bd . ';charset=utf8', 'codigo_mauricio', '1113626301', array(
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
             ));
@@ -32,10 +35,22 @@ class Conexion {
         return $this->rs;
     }
 
-    public function findAllSP($procedimiento) {
+    public function showProcedures($tabla) {
+        $this->stm = $this->con->prepare($tabla);
+        $this->stm->execute();
+        $this->rs = $this->stm->fetchAll(PDO::FETCH_OBJ);
+        return $this->rs;
+    }
+
+    public function findAllSP($procedimiento, $valor = "") {       
         switch ($procedimiento) {
             case "listarUsuarioApp":
                 $this->stm = $this->con->prepare("call listarUsuarioApp()");
+                $this->stm->execute();
+                $this->rs = $this->stm->fetchAll(PDO::FETCH_OBJ);
+                break;
+            case "listarFactura":
+                $this->stm = $this->con->prepare("call listarFactura('" . $valor . "')");
                 $this->stm->execute();
                 $this->rs = $this->stm->fetchAll(PDO::FETCH_OBJ);
                 break;
@@ -49,7 +64,7 @@ class Conexion {
     public function findById($tabla, $fieldId, $id, $consulta = "*") {
 
         switch ($consulta) {
-            case 'getIdCiudad':               
+            case 'getIdCiudad':
                 $this->stm = $this->con->prepare("select id_ciudad from " . $tabla . " where " . $fieldId . " = ?");
                 break;
 

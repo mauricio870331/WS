@@ -1,5 +1,6 @@
 <?php
-
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
 require_once "Modelo/Conexion.php";
 
 class FacturacionAPI {
@@ -51,7 +52,7 @@ class FacturacionAPI {
      *  - mostrara un array vacio
      */
     function getDatos() {
-        $conexion = new Conexion("codigo_pymesapp");
+        $conexion = new Conexion("codigo_test");
 
         switch ($_GET['tabla']) {
             case 'usuarios_app':
@@ -64,7 +65,7 @@ class FacturacionAPI {
                 }
                 break;
             case 'SP':
-                $response = $conexion->findAllSP($_GET["SP"]);
+                $response = $conexion->findAllSP($_GET["SP"],$_GET['valor']);
                 echo json_encode($response, true);
                 break;
             case 'ciudades':
@@ -84,7 +85,7 @@ class FacturacionAPI {
     }
 
     function getLogin() {
-        $conexion = new Conexion("codigo_pymesapp");
+        $conexion = new Conexion("codigo_test");
         $response = $conexion->login($_GET['id_usuario'], $_GET['password']);
         echo json_encode($response);
         $conexion->desconectar();
@@ -94,7 +95,7 @@ class FacturacionAPI {
       2  * metodo para guardar un nuevo registro de persona en la base de datos
       3 */
     function saveDatos() {
-        $conexion = new Conexion("codigo_pymesapp");
+        $conexion = new Conexion("codigo_test");
         $obj = json_decode(file_get_contents('php://input'));
         $objArr = (array) $obj;
         if (empty($objArr)) {
