@@ -1,4 +1,5 @@
 <?php
+
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 require_once "Modelo/Conexion.php";
@@ -52,7 +53,7 @@ class FacturacionAPI {
      *  - mostrara un array vacio
      */
     function getDatos() {
-        $conexion = new Conexion("codigo_test");
+        $conexion = new Conexion("codigo_pymesapp");
 
         switch ($_GET['tabla']) {
             case 'usuarios_app':
@@ -65,8 +66,8 @@ class FacturacionAPI {
                 }
                 break;
             case 'SP':
-                $response = $conexion->findAllSP($_GET["SP"],$_GET['valor']);
-                echo json_encode($response, true);
+                $response = $conexion->findAllSP($_GET["SP"], $_GET['valor']);
+                echo json_encode($response);
                 break;
             case 'ciudades':
                 if (isset($_GET['campo']) && !empty($_GET['campo'])) {
@@ -85,9 +86,14 @@ class FacturacionAPI {
     }
 
     function getLogin() {
-        $conexion = new Conexion("codigo_test");
+        $conexion = new Conexion("codigo_pymesapp");
         $response = $conexion->login($_GET['id_usuario'], $_GET['password']);
-        echo json_encode($response);
+
+        if (count($response) > 0) {
+            echo json_encode($response);
+        } else {
+            echo json_encode(array("error"=>"sin resultados"));
+        }
         $conexion->desconectar();
     }
 

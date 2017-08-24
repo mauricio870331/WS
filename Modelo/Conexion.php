@@ -11,7 +11,7 @@ class Conexion {
 
     public function __construct($bd) {
         try {
-            $this->con = new PDO('mysql:host=localhost;dbname=' . $bd . ';charset=utf8', 'codigo_mauricio', '1113626301', array(
+            $this->con = new PDO('mysql:host=localhost;dbname=' . $bd . ';charset=utf8', 'root', 'PpY8lfp838Et3716', array(
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
             ));
@@ -42,7 +42,8 @@ class Conexion {
         return $this->rs;
     }
 
-    public function findAllSP($procedimiento, $valor = "") {       
+    public function findAllSP($procedimiento, $valor = "") {
+        $params = explode(",", $valor);
         switch ($procedimiento) {
             case "listarUsuarioApp":
                 $this->stm = $this->con->prepare("call listarUsuarioApp()");
@@ -51,6 +52,11 @@ class Conexion {
                 break;
             case "listarFactura":
                 $this->stm = $this->con->prepare("call listarFactura('" . $valor . "')");
+                $this->stm->execute();
+                $this->rs = $this->stm->fetchAll(PDO::FETCH_OBJ);
+                break;
+            case "existUser":
+                $this->stm = $this->con->prepare("call existUser('" . $params[0] . "','" . $params[1] . "')");
                 $this->stm->execute();
                 $this->rs = $this->stm->fetchAll(PDO::FETCH_OBJ);
                 break;
@@ -96,7 +102,8 @@ class Conexion {
     }
 
     public function login($id, $password) {
-        $this->stm = $this->con->prepare("select * from usuarios_app where id_usuario = ? and password = ?");
+        $sql = "select * from usuarios_app where id_usuario = ? and password = ?";
+        $this->stm = $this->con->prepare($sql);
         $this->stm->execute(array($id, $password));
         $this->rs = $this->stm->fetchAll(PDO::FETCH_OBJ);
         return $this->rs;
